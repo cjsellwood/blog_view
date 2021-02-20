@@ -1,0 +1,42 @@
+.Post {
+  line-height: 1.5;
+  color: rgb(235, 235, 235);
+  padding: 15px;
+  margin: 15px;
+  position: relative;
+  background-color: rgb(29, 29, 29);
+  border: 1px solid white;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+}
+
+.Post ol {
+  list-style: none;
+}
+
+.comment-list {
+  margin: 10px 0;
+}
+
+.comment-list li {
+  margin: 10px 0;
+  position: relative;
+  padding: 10px;
+  border: 1px solid white;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+}
+
+.comment-title {
+  margin: 10px 0;
+}
+
+.comment-text {
+  margin: 10px 0;
+}
