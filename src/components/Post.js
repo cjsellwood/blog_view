@@ -1,44 +1,65 @@
 import React from "react";
-import "./Post.css"
-import { useState, useEffect } from "react";
-import { useParams, withRouter } from "react-router-dom";
+import "./Post.css";
+import { useParams } from "react-router-dom";
 
 const Post = (props) => {
-  const [post, setPost] = useState({});
+  // const [post, setPost] = useState({});
   const { id } = useParams();
 
-  useEffect(() => {
-    const filteredPost = props.posts.filter((el) => {
-      return el._id === id;
-    })[0];
-    setPost(filteredPost);
-
-  }, [])
+  const filteredPost = props.posts.filter((el) => {
+    return el._id === id;
+  })[0];
 
   let comments = null;
-  if (typeof post.title !== "undefined") {
-    comments = post.comments.map(comment => {
+  if (typeof filteredPost.title !== "undefined") {
+    comments = filteredPost.comments.map((comment) => {
       return (
         <li key={comment._id}>
           <p>{comment.username}</p>
           <p className="date">{new Date(comment.date).toLocaleDateString()}</p>
           <p className="comment-text">{comment.text}</p>
         </li>
-      )
-    })
+      );
+    });
   }
 
   return (
     <div className="Post">
-      <h1 className="title">{post.title}</h1>
-      <p className="date">{new Date(post.date).toLocaleDateString()}</p>
-      <p>{post.text}</p>
+      <h1 className="title">{filteredPost.title}</h1>
+      <p className="date">{new Date(filteredPost.date).toLocaleDateString()}</p>
+      <p>{filteredPost.text}</p>
       <h2 className="comment-title">Comments</h2>
-      <ol className="comment-list">
-        {comments}
-      </ol>
+      <ol className="comment-list">{comments}</ol>
+      <form onSubmit={props.addComment} method="POST" data-id={id} className="form">
+      <h3>Add Comment</h3>
+        <div>
+          <label htmlFor="username">Username</label>
+          <input
+            onChange={props.handleInput}
+            type="text"
+            name="username"
+            placeholder="username"
+            id="username"
+            value={props.comment.username}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="text">Comment</label>
+          <textarea
+            onChange={props.handleInput}
+            id="text"
+            name="text"
+            placeholder="Comment"
+            value={props.comment.text}
+            required
+            rows="5"
+          ></textarea>
+        </div>
+        <button type="submit">Submit</button>
+      </form>
     </div>
   );
 };
 
-export default withRouter(Post);
+export default Post;
