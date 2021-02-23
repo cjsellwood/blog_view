@@ -3,11 +3,25 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Switch, Link, Route } from "react-router-dom";
 import Post from "./components/Post";
+import Spinner from "./components/Spinner";
+import ScrollToTop from "./components/ScrollToTop";
 
 const App = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const baseUrl = "https://desolate-sands-05653.herokuapp.com";
 
+  // Clone posts immutably
+  const clonePosts = (posts) => {
+    return posts.map((el) => {
+      return {
+        ...el,
+        comments: [...el.comments],
+      };
+    });
+  };
+
+  // Get all posts
   useEffect(() => {
     const options = {
       method: "GET",
@@ -16,7 +30,7 @@ const App = () => {
         "Content-Type": "application/json",
       },
     };
-    const fetched = fetch("http://10.0.0.6:3000/posts", { options })
+    fetch(`${baseUrl}/posts`, options)
       .then((res) => {
         return res.json();
       })
@@ -26,6 +40,7 @@ const App = () => {
       });
   }, []);
 
+  // Display published posts
   let postsDisplay = [];
   if (posts.length) {
     postsDisplay = posts.map((post) => {
@@ -44,8 +59,6 @@ const App = () => {
   }
 
   // Save form values to state
-  const [username, setUsername] = useState("");
-  const [text, setText] = useState("");
   const [comment, setComment] = useState({
     username: "",
     text: "",
@@ -73,7 +86,7 @@ const App = () => {
       body: JSON.stringify(comment),
     };
     // Save new comment on server database
-    fetch(`http://localhost:3000/posts/${id}/comment`, options)
+    fetch(`${baseUrl}/posts/${id}/comment`, options)
       .then((res) => {
         return res.json();
       })
@@ -90,21 +103,18 @@ const App = () => {
         // If successfully added to database add to react state
         if (data.status === "Success") {
           // Update state immutably
-          const newPosts = [
-            ...posts.slice(0, index),
-            {
-              ...filteredPost,
-              comments: [
-                ...filteredPost.comments,
-                {
-                  ...comment,
-                  date: Date.now(),
-                },
-              ],
-            },
-            ...posts.slice(index),
-          ];
-          setPosts(newPosts);
+          const clonedPosts = clonePosts(posts);
+          clonedPosts.splice(index, 1, {
+            ...filteredPost,
+            comments: [
+              ...filteredPost.comments,
+              {
+                ...data.comment,
+                date: Date.now(),
+              },
+            ],
+          });
+          setPosts(clonedPosts);
 
           // Reset form
           setComment({
@@ -116,9 +126,10 @@ const App = () => {
   };
 
   return loading ? (
-    <p>Loading</p>
+    <Spinner></Spinner>
   ) : (
     <div className="App">
+      <ScrollToTop />
       <Switch>
         <Route path="/:id">
           <Post
